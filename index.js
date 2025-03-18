@@ -123,5 +123,43 @@ app.post("/books", async (req, res) => {
   }
 });
 
+app.get("/author", async (req, res) => {
+ try {
+    const findAuthor = await Author.findAll();
+    res.status(200).json({Author: findAuthor});
+
+ } catch (error) {
+    return res.status(500).json({ error: "Internal server error."})
+ }
+});
+
+app.post("/author/new", async (req, res) => {
+    try {
+        const { name, birthdate, email } = req.query;
+        if ( !name || !birthdate || !email){
+            return res.status(400).json({ error: "name, email, birthdate required. "});
+        }
+        const createAuthor = await Author.create({ name, birthdate, email});
+        res.status(201).json(createAuthor);
+    
+     } catch (error) {
+        return res.status(500).json({ error: "Internal server error."})
+     }
+});
+
+app.get("/genres/:genresId/authors", async (req, res) => {
+ try {
+    const { genresId} = req.params;
+
+    const findgenre = await Genre.findByPk(genresId, { include: [Book]});
+     res.status(200).json({Author: findgenre.Author});
+
+ } catch (error) {
+    return res.status(500).json({ error: "Internal server Error"});
+ }
+});
+
+
+
 
 app.listen(3000, () => console.log("Server running on port 3000"));
